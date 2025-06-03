@@ -85,11 +85,16 @@ runs:
           --url '${{ env.WOPEE_API_URL }}' \
           --data "$JSON_PAYLOAD"
           
+    - name: Set artifact timestamp
+      shell: bash
+      run: echo "ARTIFACT_TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: robot-framework-results
+        # use timestamp for artifact name
+        name: robot-framework-results-${{ env.ARTIFACT_TIMESTAMP }}
         path: |
           reports/*
         retention-days: 1
