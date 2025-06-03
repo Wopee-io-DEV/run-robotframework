@@ -86,6 +86,7 @@ runs:
           --data "$JSON_PAYLOAD"
           
     - name: Set artifact timestamp
+      if: always()
       shell: bash
       run: echo "ARTIFACT_TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
