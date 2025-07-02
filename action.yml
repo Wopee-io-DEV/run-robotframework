@@ -1,8 +1,8 @@
 name: Run Robot Framework tests
-description: 'Runs Robot Framework tests via npm test'
+description: "Runs Robot Framework tests via npm test"
 branding:
-  icon: 'fast-forward'
-  color: 'purple'
+  icon: "fast-forward"
+  color: "purple"
 
 runs:
   using: "composite"
@@ -52,7 +52,6 @@ runs:
       if: always()
       shell: bash
       run: |
-
         ERROR_FLAG=false
         if [ "${{ job.status }}" = "failure" ]; then
           ERROR_FLAG=true
@@ -75,16 +74,16 @@ runs:
               }
             }
           }
-        EOF
+          EOF
           )
+
+          curl --request POST \
+            --header 'content-type: application/json' \
+            --header 'api_key: ${{ env.WOPEE_API_KEY }}' \
+            --url '${{ env.WOPEE_API_URL }}' \
+            --data "$JSON_PAYLOAD"
         fi
 
-        curl --request POST \
-          --header 'content-type: application/json' \
-          --header 'api_key: ${{ env.WOPEE_API_KEY }}' \
-          --url '${{ env.WOPEE_API_URL }}' \
-          --data "$JSON_PAYLOAD"
-          
     - name: Set artifact timestamp
       if: always()
       shell: bash
