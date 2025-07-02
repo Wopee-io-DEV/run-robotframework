@@ -74,7 +74,7 @@ runs:
               }
             }
           }
-          EOF
+        EOF
           )
 
           curl --request POST \
