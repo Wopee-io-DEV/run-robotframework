@@ -58,29 +58,31 @@ runs:
         fi
 
         if [ "${{ github.event.action }}" = "code" ]; then
-
-          JSON_PAYLOAD=$(cat <<-EOF
-          {
-            "query": "mutation PostProcessAgentSuite(\$input: PostProcessAgentSuiteInput!) { postProcessAgentSuite(input: \$input) }",
-            "variables": {
-              "input": {
-                "error": $ERROR_FLAG,
-                "projectUuid": "${{ env.WOPEE_PROJECT_UUID }}",
-                "suiteUuid": "${{ env.WOPEE_SUITE_UUID }}",
-                "testCase": {
-                  "testCaseId": "${{ env.WOPEE_TEST_CASE_ID }}",
-                  "userStoryId": "${{ env.WOPEE_USER_STORY_ID }}"
+          JSON_PAYLOAD=$(jq -n \
+            --arg error "$ERROR_FLAG" \
+            --arg projectUuid "${{ env.WOPEE_PROJECT_UUID }}" \
+            --arg suiteUuid "${{ env.WOPEE_SUITE_UUID }}" \
+            --arg testCaseId "${{ env.WOPEE_TEST_CASE_ID }}" \
+            --arg userStoryId "${{ env.WOPEE_USER_STORY_ID }}" \
+            '{
+              query: "mutation PostProcessAgentSuite($input: PostProcessAgentSuiteInput!) { postProcessAgentSuite(input: $input) }",
+              variables: {
+                input: {
+                  error: ($error == "true"),
+                  projectUuid: $projectUuid,
+                  suiteUuid: $suiteUuid,
+                  testCase: {
+                    testCaseId: $testCaseId,
+                    userStoryId: $userStoryId
+                  }
                 }
               }
-            }
-          }
-        EOF
-          )
+            }')
 
           curl --request POST \
             --header 'content-type: application/json' \
-            --header 'api_key: ${{ env.WOPEE_API_KEY }}' \
-            --url '${{ env.WOPEE_API_URL }}' \
+            --header "api_key: ${{ env.WOPEE_API_KEY }}" \
+            --url "${{ env.WOPEE_API_URL }}" \
             --data "$JSON_PAYLOAD"
         fi
 
